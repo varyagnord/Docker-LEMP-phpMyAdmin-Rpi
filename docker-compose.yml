@@ -1,0 +1,65 @@
+version: '3.8'
+
+# Services
+services:
+
+  # Nginx Service
+  nginx:
+    image: nginx:1.23.3-alpine-slim
+    restart: always
+    ports:
+      - 80:80
+      - 8080:8080
+    volumes:
+      - ./src:/var/www/php
+      - ./.docker/nginx/conf.d:/etc/nginx/conf.d
+      - phpmyadmindata:/var/www/phpmyadmin
+    depends_on:
+      - php
+      - phpmyadmin
+
+  # PHP Service
+  php:
+    build: ./.docker/php
+    restart: always
+    working_dir: /var/www/php
+    volumes:
+      - ./src:/var/www/php
+    depends_on:
+      mariadb:
+        condition: service_healthy
+        
+  # MariaDD Service
+  mariadb:
+    image: tobi312/rpi-mariadb:10.6-alpine
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: testpass
+      ALLOW_EMPTY_PASSWORD: no
+      MARIADB_DATABASE: demo
+      MARIADB_ROOT_HOST: "%"
+      MARIADB_USER: varyagnord
+      
+    volumes:
+      - ./.docker/mariadb/my.cnf:/etc/mysql/conf.d/my.cnf
+      - mariadbdata:/var/lib/mysql
+    healthcheck:
+      test: mariadb-admin ping -h 127.0.0.1 -u root --password=$$MARIADB_ROOT_PASSWORD
+      interval: 5s
+      retries: 10
+      
+  # PhpMyAdmin Service
+  phpmyadmin:
+    image: phpmyadmin:5.2.1-fpm-alpine
+    restart: always
+    environment:
+      PMA_HOST: mariadb
+    volumes:
+      - phpmyadmindata:/var/www/html
+    depends_on:
+      mariadb:
+        condition: service_healthy
+# Volumes
+volumes:
+  mariadbdata:
+  phpmyadmindata:
