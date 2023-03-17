@@ -36,9 +36,11 @@ services:
     environment:
       MARIADB_ROOT_PASSWORD: testpass
       ALLOW_EMPTY_PASSWORD: no
-      MARIADB_DATABASE: demo
+      MARIADB_DATABASE: ocStoreBase
       MARIADB_ROOT_HOST: "%"
-      MARIADB_USER: varyagnord
+      MARIADB_USER: ocStore
+      # Измените тестовый пароль
+      MARIADB_PASSWORD: testpass2000
       
     volumes:
       - ./.docker/mariadb/my.cnf:/etc/mysql/conf.d/my.cnf
