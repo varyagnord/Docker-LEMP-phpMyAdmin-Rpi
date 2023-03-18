@@ -9,9 +9,10 @@ services:
     restart: always
     ports:
       - 80:80
+      - 443:443
       - 8080:8080
     volumes:
-      - ./src:/var/www/php
+      - ./src/php:/var/www/php
       - ./.docker/nginx/conf.d:/etc/nginx/conf.d
       - phpmyadmindata:/var/www/phpmyadmin
     depends_on:
@@ -24,7 +25,7 @@ services:
     restart: always
     working_dir: /var/www/php
     volumes:
-      - ./src:/var/www/php
+      - ./src:/var/www
     depends_on:
       mariadb:
         condition: service_healthy
@@ -35,12 +36,12 @@ services:
     restart: always
     environment:
       MARIADB_ROOT_PASSWORD: testpass
-      ALLOW_EMPTY_PASSWORD: no
-      MARIADB_DATABASE: ocStoreBase
+      ALLOW_EMPTY_PASSWORD: no    
       MARIADB_ROOT_HOST: "%"
       MARIADB_USER: ocStore
       # Измените тестовый пароль
       MARIADB_PASSWORD: testpass2000
+      MARIADB_DATABASE: ocStoreBase
       
     volumes:
       - ./.docker/mariadb/my.cnf:/etc/mysql/conf.d/my.cnf

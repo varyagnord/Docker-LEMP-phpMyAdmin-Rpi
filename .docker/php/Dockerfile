@@ -15,7 +15,7 @@ RUN apk add --no-cache \
       # --with-png=/usr/include/ \ # No longer necessary as of 7.4; https://github.com/docker-library/php/pull/910#issuecomment-559383597
       --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
-    && docker-php-ext-install pdo_mysql \
+    && docker-php-ext-install mysqli\
     && docker-php-ext-install zip \
     && docker-php-ext-enable gd \
     && apk del --no-cache \
